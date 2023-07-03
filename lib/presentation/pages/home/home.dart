@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_bloc/application/home/home_bloc.dart';
 import 'package:hive_bloc/infrastructure/services/todo_service.dart';
 import 'package:hive_bloc/presentation/pages/home/widgets/add_task_textfield.dart';
+import 'package:hive_bloc/presentation/pages/home/widgets/show_background.dart';
 
 class HomePage extends StatefulWidget {
   final String username;
@@ -76,58 +77,101 @@ class _HomePageState extends State<HomePage> {
                   ),
                   body: ListView.builder(
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        onTap: () async {
-                          final result = await showDialog(
-                            context: context,
-                            builder: (context) {
-                              return SimpleDialog(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        const SizedBox(
-                                          width: double.infinity,
-                                          child: Text(
-                                            'Edit Task',
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold),
-                                            textAlign: TextAlign.start,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 15,
-                                        ),
-                                        AddOrEditTaskField(
-                                            addOrEdit: 'Edit',
-                                            task: state.tasks[index].task),
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              );
-                            },
-                          );
-                          if (result != null) {
-                            context.read<HomeBloc>().add(UpdateTodosEvent(
+                      return Dismissible(
+                        onDismissed: (direction) {
+                          print('dismissed');
+                          context.read<HomeBloc>().add(DeleteTodosEvent(
                                 id: state.tasks[index].id,
-                                task: result,
-                                status: state.tasks[index].completed));
-                          }
+                              ));
                         },
-                        title: Text(state.tasks[index].task),
-                        trailing: Checkbox(
-                          value: state.tasks[index].completed,
-                          onChanged: (value) {
-                            context.read<HomeBloc>().add(ToggleTodosEvent(
-                                task: state.tasks[index].task,
-                                status: state.tasks[index].completed,
-                                id: state.tasks[index].id));
+                        confirmDismiss: (direction) {
+                          return showDialog(
+                              context: context,
+                              builder: (context) {
+                                /// Alert Dialog
+                                return AlertDialog(
+                                  title: const Text('Confirm Deletions ?'),
+                                  actions: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context)
+                                                    .pop(false);
+                                              },
+                                              child: const Text('No')),
+                                          TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop(true);
+                                              },
+                                              child: const Text('Yes'))
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                );
+                              });
+                        },
+                        background: showBackground(0),
+                        secondaryBackground: showBackground(1),
+                        key: ValueKey(state.tasks[index].id),
+                        child: ListTile(
+                          onTap: () async {
+                            final result = await showDialog(
+                              context: context,
+                              builder: (context) {
+                                return SimpleDialog(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          const SizedBox(
+                                            width: double.infinity,
+                                            child: Text(
+                                              'Edit Task',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold),
+                                              textAlign: TextAlign.start,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 15,
+                                          ),
+                                          AddOrEditTaskField(
+                                              addOrEdit: 'Edit',
+                                              task: state.tasks[index].task),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                );
+                              },
+                            );
+                            if (result != null) {
+                              context.read<HomeBloc>().add(UpdateTodosEvent(
+                                  id: state.tasks[index].id,
+                                  task: result,
+                                  status: state.tasks[index].completed));
+                            }
                           },
+                          title: Text(state.tasks[index].task),
+                          trailing: Checkbox(
+                            value: state.tasks[index].completed,
+                            onChanged: (value) {
+                              context.read<HomeBloc>().add(ToggleTodosEvent(
+                                  task: state.tasks[index].task,
+                                  status: state.tasks[index].completed,
+                                  id: state.tasks[index].id));
+                            },
+                          ),
                         ),
                       );
                     },

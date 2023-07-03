@@ -19,9 +19,9 @@ class TodoService {
     await _tasks.add(Task(user: username, task: task, completed: false));
   }
 
-  Future<void> removeTask(final String username, final String task) async {
-    final taskToRemove = _tasks.values.firstWhere((Task taskFromBox) =>
-        taskFromBox.task == task && taskFromBox.user == username);
+  Future<void> removeTask(final String id) async {
+    final taskToRemove =
+        _tasks.values.firstWhere((Task taskFromBox) => taskFromBox.id == id);
 
     await taskToRemove.delete();
   }

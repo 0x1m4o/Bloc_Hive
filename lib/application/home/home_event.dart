@@ -37,6 +37,17 @@ class UpdateTodosEvent extends HomeEvent {
   List<Object> get props => [task, status, id];
 }
 
+class DeleteTodosEvent extends HomeEvent {
+  const DeleteTodosEvent({
+    required this.id,
+  });
+
+  final String id;
+
+  @override
+  List<Object> get props => [id];
+}
+
 class ToggleTodosEvent extends HomeEvent {
   const ToggleTodosEvent(
       {required this.task, required this.status, required this.id});

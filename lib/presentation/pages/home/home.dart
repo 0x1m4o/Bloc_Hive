@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    Container(
+                                    const SizedBox(
                                       width: double.infinity,
                                       child: Text(
                                         'Add New Task',
@@ -54,10 +54,10 @@ class _HomePageState extends State<HomePage> {
                                         textAlign: TextAlign.start,
                                       ),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 15,
                                     ),
-                                    AddTaskField(),
+                                    AddOrEditTaskField(addOrEdit: 'Add'),
                                   ],
                                 ),
                               )
@@ -77,17 +77,56 @@ class _HomePageState extends State<HomePage> {
                   body: ListView.builder(
                     itemBuilder: (context, index) {
                       return ListTile(
+                        onTap: () async {
+                          final result = await showDialog(
+                            context: context,
+                            builder: (context) {
+                              return SimpleDialog(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        const SizedBox(
+                                          width: double.infinity,
+                                          child: Text(
+                                            'Edit Task',
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold),
+                                            textAlign: TextAlign.start,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 15,
+                                        ),
+                                        AddOrEditTaskField(
+                                            addOrEdit: 'Edit',
+                                            task: state.tasks[index].task),
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              );
+                            },
+                          );
+                          if (result != null) {
+                            context.read<HomeBloc>().add(UpdateTodosEvent(
+                                id: state.tasks[index].id,
+                                task: result,
+                                status: state.tasks[index].completed));
+                          }
+                        },
                         title: Text(state.tasks[index].task),
                         trailing: Checkbox(
                           value: state.tasks[index].completed,
                           onChanged: (value) {
-                            print(
-                              'Status on Home ${state.tasks[index].completed}',
-                            );
-                            setState(() {
-                              context.read<HomeBloc>().add(ToggleTodosEvent(
-                                  task: state.tasks[index].task));
-                            });
+                            context.read<HomeBloc>().add(ToggleTodosEvent(
+                                task: state.tasks[index].task,
+                                status: state.tasks[index].completed,
+                                id: state.tasks[index].id));
                           },
                         ),
                       );

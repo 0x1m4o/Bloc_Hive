@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'home_bloc.dart';
 
 abstract class HomeEvent extends Equatable {
@@ -21,11 +22,29 @@ class AddTodosEvent extends HomeEvent {
   List<Object> get props => [task];
 }
 
-class ToggleTodosEvent extends HomeEvent {
-  const ToggleTodosEvent({required this.task});
+class UpdateTodosEvent extends HomeEvent {
+  const UpdateTodosEvent({
+    required this.task,
+    required this.id,
+    required this.status,
+  });
 
   final String task;
+  final String id;
+  final bool status;
 
   @override
-  List<Object> get props => [task];
+  List<Object> get props => [task, status, id];
+}
+
+class ToggleTodosEvent extends HomeEvent {
+  const ToggleTodosEvent(
+      {required this.task, required this.status, required this.id});
+
+  final String task;
+  final bool status;
+  final String id;
+
+  @override
+  List<Object> get props => [task, status, id];
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_bloc/application/auth/auth_bloc.dart';
-import 'package:hive_bloc/application/home/home_bloc.dart';
 import 'package:hive_bloc/infrastructure/services/authentication_service.dart';
 import 'package:hive_bloc/infrastructure/services/todo_service.dart';
 import 'package:hive_bloc/presentation/pages/home/home.dart';
@@ -32,8 +31,7 @@ class RegisterPageState extends State<RegisterPage> {
     return BlocProvider(
       create: (context) => AuthBloc(
           RepositoryProvider.of<AuthenticationService>(context),
-          RepositoryProvider.of<TodoService>(context))
-        ..add(const RegisterServicesEvent()),
+          RepositoryProvider.of<TodoService>(context)),
       child: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
@@ -96,7 +94,7 @@ class RegisterPageState extends State<RegisterPage> {
                               alignment: Alignment.centerRight,
                               child: OutlinedButton(
                                 onPressed: () {
-                                  context.read<AuthBloc>().add(RunRegisterEvent(
+                                  context.read<AuthBloc>().add(RegisterEvent(
                                       username: usernameC.text,
                                       password: passwordC.text));
                                 },

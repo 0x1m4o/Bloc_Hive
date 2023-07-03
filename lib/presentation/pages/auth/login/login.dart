@@ -32,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
       create: (context) => AuthBloc(
           RepositoryProvider.of<AuthenticationService>(context),
           RepositoryProvider.of<TodoService>(context))
-        ..add(const RegisterServicesEvent()),
+        ..add(const InitEvent()),
       child: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is LoginSuccess) {
@@ -96,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
                               child: OutlinedButton(
                                 onPressed: () {
                                   context.read<AuthBloc>().add(
-                                        RunLoginEvent(
+                                        LoginEvent(
                                           username: usernameC.text,
                                           password: passwordC.text,
                                         ),

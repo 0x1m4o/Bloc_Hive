@@ -1,32 +1,46 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 
-class AddTaskField extends StatefulWidget {
-  AddTaskField({super.key});
+class AddOrEditTaskField extends StatefulWidget {
+  final String addOrEdit;
+  String? task;
+  AddOrEditTaskField({Key? key, required this.addOrEdit, this.task})
+      : super(key: key);
 
   @override
-  State<AddTaskField> createState() => _AddTaskFieldState();
+  State<AddOrEditTaskField> createState() => _AdOrEditdTaskFieldState();
 }
 
-class _AddTaskFieldState extends State<AddTaskField> {
-  TextEditingController addTask = TextEditingController();
+class _AdOrEditdTaskFieldState extends State<AddOrEditTaskField> {
+  TextEditingController addOrTask = TextEditingController();
 
   @override
   void dispose() {
-    addTask.clear();
+    addOrTask.clear();
     super.dispose();
   }
 
+  @override
+  void initState() {
+    if (widget.task != null) {
+      addOrTask.text = widget.task!;
+    }
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         TextField(
-          controller: addTask,
-          decoration: const InputDecoration(
-            focusedBorder:
-                OutlineInputBorder(borderSide: BorderSide(color: Colors.black)),
-            floatingLabelStyle: TextStyle(color: Colors.black),
-            border: OutlineInputBorder(),
-            hintText: 'Enter New Task',
+          controller: addOrTask,
+          decoration: InputDecoration(
+            focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black)),
+            floatingLabelStyle: const TextStyle(color: Colors.black),
+            border: const OutlineInputBorder(),
+            hintText: '${widget.addOrEdit} Task',
             labelText: 'Task',
           ),
         ),
@@ -38,13 +52,13 @@ class _AddTaskFieldState extends State<AddTaskField> {
           alignment: Alignment.centerRight,
           child: OutlinedButton(
             onPressed: () {
-              Navigator.of(context).pop(addTask.text);
+              Navigator.of(context).pop(addOrTask.text);
             },
             style: const ButtonStyle(
                 side: MaterialStatePropertyAll(BorderSide(width: 1))),
-            child: const Text(
-              'Add',
-              style: TextStyle(color: Colors.black),
+            child: Text(
+              widget.addOrEdit,
+              style: const TextStyle(color: Colors.black),
             ),
           ),
         ),

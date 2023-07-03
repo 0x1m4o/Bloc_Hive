@@ -11,14 +11,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final TodoService todoService;
   AuthBloc(this.authenticationService, this.todoService)
       : super(const AuthInitial()) {
-    on<RunLoginEvent>((event, emit) async {
+    // Login Handler
+    on<LoginEvent>((event, emit) async {
       final user = await authenticationService.authenticateUser(
           event.username, event.password);
       if (user != null) {
         emit(LoginSuccess(username: user));
       }
     });
-    on<RunRegisterEvent>((event, emit) async {
+
+    // Register Handler
+    on<RegisterEvent>((event, emit) async {
       final results = await authenticationService.createUser(
           event.username, event.password);
       switch (results) {
@@ -35,7 +38,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
-    on<RegisterServicesEvent>((event, emit) async {
+    // Service initial handler
+    on<InitEvent>((event, emit) async {
       await authenticationService.init();
       await todoService.init();
 

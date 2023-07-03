@@ -20,9 +20,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       add(LoadTodosEvent(username: currentState.username));
     });
 
+    on<UpdateTodosEvent>((event, emit) async {
+      final currentState = state as TodosLoadedState;
+      await todoService.updateTask(currentState.username, event.task, event.id);
+      add(LoadTodosEvent(username: currentState.username));
+    });
+
     on<ToggleTodosEvent>((event, emit) async {
       final currentState = state as TodosLoadedState;
-      await todoService.updateTask(currentState.username, event.task);
+      await todoService.updateTask(currentState.username, event.task, event.id,
+          completed: !event.status);
       add(LoadTodosEvent(username: currentState.username));
     });
   }

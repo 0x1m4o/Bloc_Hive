@@ -4,7 +4,9 @@ import 'package:hive_bloc/infrastructure/models/home/task.dart';
 class TodoService {
   late Box<Task> _tasks;
   Future<void> init() async {
-    Hive.registerAdapter(TaskAdapter());
+    if (!Hive.isAdapterRegistered(1)) {
+      Hive.registerAdapter(TaskAdapter());
+    }
     _tasks = await Hive.openBox('tasksBox');
   }
 
@@ -25,14 +27,18 @@ class TodoService {
   }
 
   Future<void> updateTask(
-    final String username,
-    final String task,
-  ) async {
-    final taskToEdit = _tasks.values.firstWhere((Task taksFromBox) =>
-        taksFromBox.task == task && taksFromBox.user == username);
+      final String username, final String task, final String id,
+      {bool? completed}) async {
+    final taskToUpdate =
+        _tasks.values.firstWhere((Task taskFromBox) => taskFromBox.id == id);
 
-    final index = taskToEdit.key as int;
-    await _tasks.put(index,
-        Task(user: username, task: task, completed: !taskToEdit.completed));
+    final updatedTask = Task(
+      id: taskToUpdate.id,
+      user: username,
+      task: task,
+      completed: completed ?? taskToUpdate.completed,
+    );
+
+    await _tasks.put(taskToUpdate.key, updatedTask);
   }
 }
